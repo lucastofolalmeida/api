@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>API de pokémon</title>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Buscar Pokémon</h1>
+
+        <input
+            type="text"
+            id="pokemon"
+            placeholder="Digite o nome de um Pokémon"
+        >
+
+        <button onclick="buscarPokemon()">
+            Capturar
+        </button>
+
+        <div id="resultado">
+            <p>Digite um Pokémon para começar.</p>
+        </div>
+
+    </div>
+
+    <script>
+        async function buscarPokemon() {
+
+            const nome = document
+                .getElementById("pokemon")
+                .value
+                .toLowerCase()
+                .trim();
+
+            const resultado = document.getElementById("resultado");
+            if (nome === "") {
+                resultado.innerHTML = "<p class='erro'>Digite um Pokémon.</p>";
+                return;
+            }
+
+            resultado.innerHTML = "<p>Buscando...</p>";
+
+            try {
+
+                const resposta = await fetch(
+                    `https://pokeapi.co/api/v2/pokemon/${nome}`
+                );
+
+                const pokemon = await resposta.json();
+
+                resultado.innerHTML = `
+                    <h2>${pokemon.name.toUpperCase()}</h2>
+
+                    <img
+                        src="${pokemon.sprites.front_default}"
+                        alt="${pokemon.name}"
+                    >
+
+                    <p><strong>Altura:</strong> ${pokemon.height / 10} m</p>
+
+                    <p><strong>Peso:</strong> ${pokemon.weight / 10} kg</p>
+
+                    <p>
+                        <strong>Experiência base:</strong>
+                        ${pokemon.base_experience}
+                    </p>
+                `;
+
+            } catch (erro) {
+
+                resultado.innerHTML = `
+                    <p class="erro">
+                        Pokémon não encontrado para a captura
+                    </p>
+                `;
+            }
+        }
+    </script>
+
+</body>
+</html>
