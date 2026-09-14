@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <link rel="stylesheet" href="style.css">
     <title>API de pokémon</title>
 </head>
 
@@ -13,11 +14,7 @@
 
         <h1>Buscar Pokémon</h1>
 
-        <input
-            type="text"
-            id="pokemon"
-            placeholder="Digite o nome de um Pokémon"
-        >
+        <input type="text" id="pokemon" placeholder="Digite o nome de um Pokémon">
 
         <button onclick="buscarPokemon()">
             Capturar
@@ -52,7 +49,63 @@
                     `https://pokeapi.co/api/v2/pokemon/${nome}`
                 );
 
+
                 const pokemon = await resposta.json();
+
+                const tipos = pokemon.types.map((tipo) => tipo.type.name).join(", ");
+
+                const respostaEspecie = await fetch(pokemon.species.url);
+
+                const especie = await respostaEspecie.json();
+
+
+                const respostaEvolucao = await fetch(especie.evolution_chain.url);
+
+                const evolucao = await respostaEvolucao.json();
+
+                const linhaEvolutiva = [];
+
+                let atual = evolucao.chain;
+
+                while (atual) {
+                    linhaEvolutiva.push(atual.species.name);
+
+                    if (atual.evolves_to.length > 0) {
+                        atual = atual.evolves_to[0];
+                    } else {
+                        atual = null;
+                    }
+                }
+
+                const pokemonsEvolucao = await Promise.all(
+                    linhaEvolutiva.map(async (nomeEvolucao) => {
+                        const respostaEvolucaoPokemon = await fetch(
+                            `https://pokeapi.co/api/v2/pokemon/${nomeEvolucao}`,
+                        );
+
+                        return await respostaEvolucaoPokemon.json();
+                    }),
+                );
+
+                const htmlEvolucao = pokemonsEvolucao
+                    .map(
+                        (pokemonEvolucao) => `
+                    <div>
+                        <p>
+                            <strong>
+                                ${pokemonEvolucao.name.toUpperCase()}
+                            </strong>
+                        </p>
+
+                        <img
+                            src="${pokemonEvolucao.sprites.front_default}"
+                            alt="${pokemonEvolucao.name}"
+                        >
+                    </div>
+                `,
+                    )
+                    .join("");
+
 
                 resultado.innerHTML = `
                     <h2>${pokemon.name.toUpperCase()}</h2>
@@ -70,6 +123,17 @@
                         <strong>Experiência base:</strong>
                         ${pokemon.base_experience}
                     </p>
+
+                    <p>
+                        <strong>Tipo:</strong>
+                        ${tipos}
+                    </p>
+
+                    <h3>Linha evolutiva</h3>
+
+                    <div>
+                        ${htmlEvolucao}
+                    </div>
                 `;
 
             } catch (erro) {
@@ -84,4 +148,5 @@
     </script>
 
 </body>
+
 </html>
