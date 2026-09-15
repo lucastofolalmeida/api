@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <title>API de pokémon</title>
   </head>
 
@@ -11,11 +11,11 @@
     <div class="container">
       <h1>Buscar Pokémon</h1>
 
-        <input
-            type="text"
-            id="pokemon"
-            placeholder="Digite o nome de um Pokémon"
-        >
+      <input
+        type="text"
+        id="pokemon"
+        placeholder="Digite o nome de um Pokémon"
+      />
 
       <button onclick="buscarPokemon()">Capturar</button>
 
@@ -151,13 +151,12 @@
 
         resultado.innerHTML = "<p>Buscando...</p>";
 
-            try {
+        try {
+          const resposta = await fetch(
+            `https://pokeapi.co/api/v2/pokemon/${nome}`,
+          );
 
-                const resposta = await fetch(
-                    `https://pokeapi.co/api/v2/pokemon/${nome}`
-                );
-
-                const pokemon = await resposta.json();
+          const pokemon = await resposta.json();
 
           const tipos = pokemon.types
             .map((tipo) => {
@@ -239,6 +238,16 @@
                         <strong>Experiência base:</strong>
                         ${pokemon.base_experience}
                     </p>
+
+                    <p>
+                        <span class="tipos"> <strong>Tipo:</strong> ${tipos} </span>
+                    </p>
+
+                    <h3>Linha evolutiva</h3>
+
+                    <div>
+                        ${htmlEvolucao}
+                    </div>
                 `;
         } catch (erro) {
           resultado.innerHTML = `
@@ -249,6 +258,5 @@
         }
       }
     </script>
-
-</body>
+  </body>
 </html>
