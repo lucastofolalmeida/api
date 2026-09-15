@@ -1,60 +1,228 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <title>API de pokémon</title>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <div class="container">
+      <h1>Buscar Pokémon</h1>
 
-        <h1>Buscar Pokémon</h1>
+      <input
+        type="text"
+        id="pokemon"
+        placeholder="Digite o nome de um Pokémon"
+      />
 
-        <input
-            type="text"
-            id="pokemon"
-            placeholder="Digite o nome de um Pokémon"
-        >
+      <button onclick="buscarPokemon()">Capturar</button>
 
-        <button onclick="buscarPokemon()">
-            Capturar
-        </button>
-
-        <div id="resultado">
-            <p>Digite um Pokémon para começar.</p>
-        </div>
-
+      <div id="resultado">
+        <p>Digite um Pokémon para começar.</p>
+      </div>
     </div>
 
     <script>
-        async function buscarPokemon() {
+      const tiposPokemon = {
+        normal: {
+          nome: "Normal",
+          cor: "#A8A77A",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/normal.svg",
+        },
+        fire: {
+          nome: "Fogo",
+          cor: "#EE8130",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/fire.svg",
+        },
+        water: {
+          nome: "Água",
+          cor: "#6390F0",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/water.svg",
+        },
+        electric: {
+          nome: "Elétrico",
+          cor: "#F7D02C",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/electric.svg",
+        },
+        grass: {
+          nome: "Grama",
+          cor: "#7AC74C",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/grass.svg",
+        },
+        ice: {
+          nome: "Gelo",
+          cor: "#96D9D6",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/ice.svg",
+        },
+        fighting: {
+          nome: "Lutador",
+          cor: "#C22E28",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/fighting.svg",
+        },
+        poison: {
+          nome: "Veneno",
+          cor: "#A33EA1",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/poison.svg",
+        },
+        ground: {
+          nome: "Terrestre",
+          cor: "#E2BF65",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/ground.svg",
+        },
+        flying: {
+          nome: "Voador",
+          cor: "#A98FF3",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/flying.svg",
+        },
+        psychic: {
+          nome: "Psíquico",
+          cor: "#F95587",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/psychic.svg",
+        },
+        bug: {
+          nome: "Inseto",
+          cor: "#A6B91A",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/bug.svg",
+        },
+        rock: {
+          nome: "Pedra",
+          cor: "#B6A136",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/rock.svg",
+        },
+        ghost: {
+          nome: "Fantasma",
+          cor: "#735797",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/ghost.svg",
+        },
+        dragon: {
+          nome: "Dragão",
+          cor: "#6F35FC",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/dragon.svg",
+        },
+        dark: {
+          nome: "Sombrio",
+          cor: "#705746",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/dark.svg",
+        },
+        steel: {
+          nome: "Aço",
+          cor: "#B7B7CE",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/steel.svg",
+        },
+        fairy: {
+          nome: "Fada",
+          cor: "#D685AD",
+          icone:
+            "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/fairy.svg",
+        },
+      };
 
-            const nome = document
-                .getElementById("pokemon")
-                .value
-                .toLowerCase()
-                .trim();
+      async function buscarPokemon() {
+        const nome = document
+          .getElementById("pokemon")
+          .value.toLowerCase()
+          .trim();
 
-            const resultado = document.getElementById("resultado");
-            if (nome === "") {
-                resultado.innerHTML = "<p class='erro'>Digite um Pokémon.</p>";
-                return;
+        const resultado = document.getElementById("resultado");
+
+        if (nome === "") {
+          resultado.innerHTML = "<p class='erro'>Digite um Pokémon.</p>";
+          return;
+        }
+
+        resultado.innerHTML = "<p>Buscando...</p>";
+
+        try {
+          const resposta = await fetch(
+            `https://pokeapi.co/api/v2/pokemon/${nome}`,
+          );
+
+          const pokemon = await resposta.json();
+
+          const tipos = pokemon.types
+            .map((tipo) => {
+              const tipoInfo = tiposPokemon[tipo.type.name];
+
+              return `
+                <span class="tipo" style="background-color: ${tipoInfo.cor}">
+                  <img src="${tipoInfo.icone}" alt="${tipoInfo.nome}">
+                  ${tipoInfo.nome}
+                </span>
+              `;
+            })
+            .join("");
+
+          const respostaEspecie = await fetch(pokemon.species.url);
+
+          const especie = await respostaEspecie.json();
+
+          const respostaEvolucao = await fetch(especie.evolution_chain.url);
+
+          const evolucao = await respostaEvolucao.json();
+
+          const linhaEvolutiva = [];
+
+          let atual = evolucao.chain;
+
+          while (atual) {
+            linhaEvolutiva.push(atual.species.name);
+
+            if (atual.evolves_to.length > 0) {
+              atual = atual.evolves_to[0];
+            } else {
+              atual = null;
             }
+          }
 
-            resultado.innerHTML = "<p>Buscando...</p>";
+          const pokemonsEvolucao = await Promise.all(
+            linhaEvolutiva.map(async (nomeEvolucao) => {
+              const respostaEvolucaoPokemon = await fetch(
+                `https://pokeapi.co/api/v2/pokemon/${nomeEvolucao}`,
+              );
 
-            try {
+              return await respostaEvolucaoPokemon.json();
+            }),
+          );
 
-                const resposta = await fetch(
-                    `https://pokeapi.co/api/v2/pokemon/${nome}`
-                );
+          const htmlEvolucao = pokemonsEvolucao
+            .map(
+              (pokemonEvolucao) => `
+                    <div>
+                        <p>
+                            <strong>
+                                ${pokemonEvolucao.name.toUpperCase()}
+                            </strong>
+                        </p>
 
-                const pokemon = await resposta.json();
+                        <img
+                            src="${pokemonEvolucao.sprites.front_default}"
+                            alt="${pokemonEvolucao.name}"
+                        >
+                    </div>
+                `,
+            )
+            .join("");
 
-                resultado.innerHTML = `
+          resultado.innerHTML = `
                     <h2>${pokemon.name.toUpperCase()}</h2>
 
                     <img
@@ -70,18 +238,25 @@
                         <strong>Experiência base:</strong>
                         ${pokemon.base_experience}
                     </p>
+
+                    <p>
+                        <span class="tipos"> <strong>Tipo:</strong> ${tipos} </span>
+                    </p>
+
+                    <h3>Linha evolutiva</h3>
+
+                    <div>
+                        ${htmlEvolucao}
+                    </div>
                 `;
-
-            } catch (erro) {
-
-                resultado.innerHTML = `
+        } catch (erro) {
+          resultado.innerHTML = `
                     <p class="erro">
                         Pokémon não encontrado para a captura
                     </p>
                 `;
-            }
         }
+      }
     </script>
-
-</body>
+  </body>
 </html>
